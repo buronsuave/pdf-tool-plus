@@ -1,7 +1,7 @@
 import React from 'react';
 import Card from './Card';
 
-const CardGrid = ({ cards, addCard, removeCard }) => {
+const CardGrid = ({ cards, addCard, removeCard, updateCard }) => {
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -13,7 +13,14 @@ const CardGrid = ({ cards, addCard, removeCard }) => {
     return (
         <div className="grid-container">
             {cards.map((card) => (
-                <Card key={card.id} id={card.id} pdf={card.pdf} removeCard={removeCard} />
+                <Card 
+                    key={card.id} 
+                    id={card.id} 
+                    pdf={card.pdf} 
+                    name={card.name} 
+                    removeCard={removeCard} 
+                    updateCard={updateCard} 
+                />
             ))}
             <div className="card placeholder-card">
                 <label htmlFor="fileUpload">

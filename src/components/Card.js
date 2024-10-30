@@ -1,13 +1,34 @@
-import React from 'react';
-import { FiTrash2 } from 'react-icons/fi';
+import React, { useState } from 'react';
+import {} from '../firebase';
 
-const Card = ({ id, pdf, removeCard }) => {
+const Card = ({ id, pdf, name, removeCard, updateCard }) => {
+    const [editableName, setEditableName] = useState(name || '');
+    const [isEditing, setIsEditing] = useState(false);
+
+    const handleNameChange = (e) => {
+        setEditableName(e.target.value);
+    };
+
+    const handleNameSave = () => {
+        if (!updateCard(id, editableName)) {setEditableName(null)}
+        setIsEditing(false);
+    };
+
     return (
         <div className="card">
-            <iframe src={pdf} width="100%" height="400px" title="PDF Viewer"></iframe>
-            <button className="removeButton" onClick={() => removeCard(id)}>
-                <FiTrash2 /> Remove
-            </button>
+            <iframe src={pdf} title="Generated PDF" width="100%" height="400px"></iframe>
+            {isEditing ? (
+                <input
+                    type="text"
+                    value={editableName}
+                    onChange={handleNameChange}
+                    onBlur={handleNameSave}
+                    autoFocus
+                />
+            ) : (
+                <h3 onClick={() => setIsEditing(true)}>{editableName || 'Unnamed PDF'}</h3>
+            )}
+            <button onClick={() => removeCard(id)}>Remove</button>
         </div>
     );
 };
