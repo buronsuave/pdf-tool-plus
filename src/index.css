@@ -1,13 +1,121 @@
-body {
+html, body, #root {
+  height: 100%;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.app {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 50px 1fr 50px;
+  grid-template-areas:
+      "navbar"
+      "main"
+      "footer";
+  min-height: 100vh;
+  min-width: 100vh;
+}
+
+nav {
+  grid-area: navbar;
+  background-color: #424B54;
+  color: white;
+  padding: 1em;
+}
+
+aside {
+  grid-area: sidebar;
+  background-color: #9B6A6C;
+}
+
+main {
+  grid-area: main;
+  background-color: #424B54;
+  padding: 1em;
+  text-align: center;
+  color: white;
+}
+
+footer {
+  grid-area: footer;
+  background-color: #424B54;
+  color: white;
+  padding: 1em;
+  text-align: center;
+}
+
+.grid-container {
+  display: grid;
+  padding: min(50px, 7%);
+  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  justify-content: center;
+}
+
+.search-container {
+  display: flex;
+  padding: min(50px, 7%);
+}
+
+.card {
+  padding: 2em;
+  border: 1px solid #424B54;
+  border-radius: 10px;
+  background-color: #93A8AC;
+  text-align: center;
+  min-height: 500px;
+  max-inline-size: 100%;
+  block-size: auto;
+}
+
+.removeButton {
+  margin-top: 20px;
+  background-color: #FF4D4D;
+  color: white;
+  border: none;
+  padding: 0.5em 1em;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.placeholder-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #7F8C8D;
+  min-height: 500px;
+  cursor: pointer;
+}
+
+.placeholder-text {
+  color: white;
+  font-size: 1.2em;
+}
+
+.toggleButton {
+  display: none;
+}
+
+@media(max-width: 800px) {
+  .app {
+      grid-template-columns: 1fr;
+  }
+
+  aside {
+      position: fixed;
+      width: 200px;
+      display: none;
+  }
+
+  aside:target {
+      display: block;
+  }
+
+  .show {
+      display: block;
+  }
+
+  .toggleButton {
+      display: inline;
+  }
 }
