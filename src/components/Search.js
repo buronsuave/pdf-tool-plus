@@ -26,20 +26,23 @@ const Search = ({ cards, addCard, removeCard, updateCard }) => {
     };
 
     const searchPDF = async (pdfUrl, searchTerm, name) => {
-        console.log(pdfUrl)
         const loadingTask = getDocument(pdfUrl);
         const pdf = await loadingTask.promise;
         const numPages = pdf.numPages;
         const foundResults = [];
-
+        
+        var paraIndex = 1;
         for (let pageNum = 1; pageNum <= numPages; pageNum++) {
             const page = await pdf.getPage(pageNum);
             const textContent = await page.getTextContent();
-            const paragraphs = textContent.items.map(item => item.str);
-            const paragraphText = paragraphs.join(' ');
-
-            if (paragraphText.includes(searchTerm)) {
-                foundResults.push({ name, paragraph: paragraphText, paraIndex: pageNum - 1 });
+            const pageParagraphs = textContent.items.map(item => item.str);
+            const pageText = pageParagraphs.join(' ');
+            const paraTexts = pageText.split(".  ");
+            for (var paraIter = 0; paraIter < paraTexts.length; paraIter++){
+                if (paraTexts[paraIter].includes(searchTerm)) {
+                    foundResults.push({ name, paragraph: paraTexts[paraIter], paraIndex: paraIndex });
+                }
+                paraIndex++;
             }
         }
 
@@ -54,7 +57,7 @@ const Search = ({ cards, addCard, removeCard, updateCard }) => {
         const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     
         const pageWidth = page.getWidth() - 100; // 50px margin on each side
-        const pageHeight = page.getHeight() - 50; // 50px margin at the bottom
+        const pageHeight = page.getHeight() - 70; // 50px margin at the bottom
         const textSize = 12;
         const margin = 50; // Margin from the top
         let yPosition = pageHeight - margin; // Start drawing from the top
