@@ -13,35 +13,27 @@ html, body, #root {
       "main"
       "footer";
   min-height: 100vh;
-  min-width: 100vh;
 }
 
-nav {
+.navbar {
   grid-area: navbar;
-  background-color: #424B54;
-  color: white;
-  padding: 1em;
-}
-
-aside {
-  grid-area: sidebar;
-  background-color: #9B6A6C;
+  z-index: 1000;  /* Ensure the navbar is always on top */
 }
 
 main {
   grid-area: main;
   background-color: #424B54;
   padding: 1em;
-  text-align: center;
   color: white;
+  overflow-y: auto;
 }
 
 footer {
   grid-area: footer;
   background-color: #424B54;
   color: white;
-  padding: 1em;
   text-align: center;
+  padding: 1em;
 }
 
 .grid-container {
@@ -50,11 +42,6 @@ footer {
   gap: 15px;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   justify-content: center;
-}
-
-.search-container {
-  display: flex;
-  padding: min(50px, 7%);
 }
 
 .card {
@@ -92,59 +79,9 @@ footer {
   font-size: 1.2em;
 }
 
-.toggleButton {
-  display: none;
-}
-
 @media(max-width: 800px) {
   .app {
       grid-template-columns: 1fr;
-  }
-
-  aside {
-      position: fixed;
-      width: 200px;
-      display: none;
-  }
-
-  aside:target {
-      display: block;
-  }
-
-  .show {
-      display: block;
-  }
-
-  .toggleButton {
-      display: inline;
-  }
-}
-
-/* components/Navbar.css */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  background-color: #424B54;
-  padding: 1em;
-  color: white;
-}
-
-.nav-link {
-  color: white;
-  text-decoration: none;
-  margin: 0 10px;
-  transition: color 0.3s;
-}
-
-.nav-link:hover {
-  text-decoration: underline;
-  color: #FF4D4D; /* Change color on hover */
-}
-
-@media (max-width: 600px) {
-  .navbar {
-      flex-direction: column;
-      align-items: center;
   }
 }
 

@@ -83,7 +83,7 @@ const Search = ({ cards, addCard, removeCard, updateCard }) => {
         // Set up the text to write to the PDF
         let textContent = "Search Results:\n\n";
         results.forEach(result => {
-            textContent += `Document ${result.name + 1}: "${sanitizeText(result.paragraph)}" (Paragraph ${result.paraIndex + 1})\n\n`;
+            textContent += `Document ${result.name}: "${sanitizeText(result.paragraph)}" (Paragraph ${result.paraIndex + 1})\n\n`;
         });
     
         // Split the text into lines

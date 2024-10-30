@@ -6,7 +6,7 @@ import Navbar from './components/Navbar';
 import './index.css';
 import { getWorkspace, syncWorkspace } from './realtimeDB';
 import { storage } from './firebase';
-import { ref, uploadBytes } from 'firebase/storage';
+import { ref, uploadBytes, deleteObject } from 'firebase/storage';
 import { getPdfUrl } from './utils'; 
 
 const App = () => {
@@ -62,7 +62,7 @@ const App = () => {
 
         try {
             await uploadBytes(storageRef, blob);
-            alert('PDF uploaded successfully!');
+            console.log('PDF uploaded successfully!');
             return `pdfs/${id}.pdf`; // Return the storage ID
         } catch (error) {
             console.error('Error uploading PDF: ', error);
@@ -72,27 +72,66 @@ const App = () => {
 
     const handleSync = async () => {
         try {
-            const files = await Promise.all(
-                cards.map(async (card) => {
-                    const storageId = await uploadToFirestore(card.pdf, card.id); // Upload each PDF
-                    return {
-                        name: card.name,
-                        storageId: storageId,
-                    };
-                })
-            );
-            
-            console.log(files);
-            await syncWorkspace(files); // Now sync the workspace with uploaded files
+            // Fetch the existing workspace data
+            const workspace = await getWorkspace('myworkspace');
+            const existingFiles = workspace && workspace.files ? workspace.files : {};
+            const files = [];
+            const removedFiles = [];
+    
+            // Build a set of existing file names for quick lookup
+            const existingNames = new Set(Object.keys(existingFiles));
+    
+            // First, handle the new files and updates
+            for (const card of cards) {
+                if (card.name) {
+                    if (!existingNames.has(card.name)) {
+                        // This is a new file, upload it
+                        const storageId = await uploadToFirestore(card.pdf, card.id); // Upload each PDF
+                        files.push({
+                            name: card.name,
+                            storageId: storageId,
+                        });
+                    } else {
+                        // Existing file, keep it in the files list
+                        files.push({
+                            name: card.name,
+                            storageId: existingFiles[card.name].storageId, // Retain the existing storageId
+                        });
+                    }
+                }
+            }
+    
+            // Identify removed files by checking existing files against local cards
+            for (const name in existingFiles) {
+                if (!cards.some(card => card.name === name)) {
+                    // If the name is not found in local cards, mark it for removal
+                    removedFiles.push(name);
+                }
+            }
+    
+            console.log('Files to sync:', files);
+            console.log('Files to remove:', removedFiles);
+    
+            // Sync the workspace with the updated files list
+            await syncWorkspace(files);
+    
+            // Now, remove any files that are no longer present locally
+            await Promise.all(removedFiles.map(async (fileName) => {
+                const storageId = existingFiles[fileName].storageId;
+                const storageRef = ref(storage, storageId);
+                await deleteObject(storageRef); // Remove from Firebase Storage
+            }));
+    
+            alert('Workspace synced successfully!');
         } catch (error) {
             console.error('Error during syncing:', error);
         }
-    };
+    };    
 
     return (
         <Router>
             <div className="app">
-                <Navbar cards={cards} onSync={handleSync} /> {/* Pass handleSync as prop */}
+                <Navbar cards={cards} onSync={handleSync} /> 
                 <main>
                     <Routes>
                         <Route 
