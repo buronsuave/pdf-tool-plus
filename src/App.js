@@ -8,9 +8,38 @@ import { getWorkspace, syncWorkspace } from './realtimeDB';
 import { storage } from './firebase';
 import { ref, uploadBytes, deleteObject } from 'firebase/storage';
 import { getPdfUrl } from './utils'; 
+import { auth } from './firebase';
+import { signInWithGoogle, logOut } from './authUtils';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const App = () => {
     const [cards, setCards] = useState([]);
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            setUser(user);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    const handleLogin = async () => {
+        try {
+            const user = await signInWithGoogle();
+            alert(`Welcome, ${user.displayName}!`);
+        } catch (error) {
+            alert('Error logging in. Please try again.');
+        }
+    };
+
+    const handleLogout = async () => {
+        try {
+            await logOut();
+            alert('You have been logged out.');
+        } catch (error) {
+            alert('Error logging out. Please try again.');
+        }
+    };
 
     useEffect(() => {
         const loadWorkspace = async () => {
@@ -23,7 +52,6 @@ const App = () => {
                         name: data.documentName,
                     })
                 );
-                console.log(loadedCards)
                 setCards(loadedCards);
             }
         };
@@ -52,7 +80,6 @@ const App = () => {
             card.id === id ? { ...card, name: newName } : card
         ));
 
-        console.log(cards)
         return true;
     };
 
@@ -109,9 +136,6 @@ const App = () => {
                 }
             }
     
-            console.log('Files to sync:', files);
-            console.log('Files to remove:', removedFiles);
-    
             // Sync the workspace with the updated files list
             await syncWorkspace(files);
     
@@ -124,22 +148,28 @@ const App = () => {
     
             alert('Workspace synced successfully!');
         } catch (error) {
-            console.error('Error during syncing:', error);
+            alert('Error during syncing:', error);
         }
     };    
 
     return (
         <Router>
             <div className="app">
-                <Navbar cards={cards} onSync={handleSync} /> 
+                <Navbar 
+                    cards={cards} 
+                    onSync={handleSync} 
+                    user={user}
+                    onLogin={handleLogin}
+                    onLogout={handleLogout} 
+                    addCard={addCard}
+                /> 
                 <main>
                     <Routes>
                         <Route 
                             path="/" 
                             element={
                                 <CardGrid 
-                                    cards={cards} 
-                                    addCard={addCard} 
+                                    cards={cards}  
                                     removeCard={removeCard} 
                                     updateCard={updateCard} 
                                 />

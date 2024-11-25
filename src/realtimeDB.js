@@ -23,7 +23,7 @@ export const syncWorkspace = async (files) => {
 
         // Update or create the workspace data in Realtime Database
         await set(workspaceRef, workspaceData);
-        alert('Workspace synced successfully!');
+        console.log('Workspace synced successfully!');
     } catch (error) {
         console.error('Error syncing workspace:', error);
     }
