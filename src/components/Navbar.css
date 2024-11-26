@@ -76,17 +76,6 @@
     z-index: 998;
 }
 
-/* Media query for responsive behavior */
-@media (max-width: 1150px) {
-    .navbar-links {
-        display: none; /* Hide navbar links on small screens */
-    }
-
-    .toggle-button {
-        display: flex; /* Show toggle button on small screens */
-    }
-}
-
 .nav-link {
     display: flex;
     align-items: center;
@@ -106,4 +95,165 @@
     gap: 5px;
     font-weight: bold;
     color: #93A8AC;
+}
+
+/* Workspace Dropdown */
+.workspace-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.workspace-dropdown {
+    padding: 5px 10px;
+    font-size: 0.9em;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #444;
+    color: white;
+    outline: none;
+}
+
+.workspace-dropdown:hover {
+    border-color: #04AA6D;
+}
+
+.add-workspace-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    font-size: 0.9em;
+    color: #04AA6D;
+    background: none;
+    border: 1px solid #04AA6D;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.add-workspace-btn:hover {
+    background-color: #04AA6D;
+    color: white;
+}
+
+/* Workspace Creation Modal */
+.workspace-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #333;
+    color: white;
+    padding: 30px;
+    width: 360px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    z-index: 1002;
+}
+
+.workspace-modal input {
+    width: 340px;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #444;
+    color: white;
+}
+
+.workspace-modal button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: white;
+    background-color: #04AA6D;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.workspace-modal button:hover {
+    background-color: #038853;
+}
+
+
+/* Sidebar Workspace Selector */
+.workspace-selector-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 0;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #555;
+}
+
+.workspace-dropdown-sidebar {
+    padding: 5px 10px;
+    font-size: 0.9em;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #444;
+    color: white;
+    outline: none;
+    width: 100%;
+}
+
+.workspace-dropdown-sidebar:hover {
+    border-color: #04AA6D;
+}
+
+.add-workspace-btn-sidebar {
+    padding: 5px 10px;
+    font-size: 0.9em;
+    color: #04AA6D;
+    background: none;
+    border: 1px solid #04AA6D;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.add-workspace-btn-sidebar:hover {
+    background-color: #04AA6D;
+    color: white;
+}
+
+/* Media query for responsive behavior */
+@media (max-width: 1150px) {
+    .navbar-links {
+        display: none; /* Hide navbar links on small screens */
+    }
+
+    .toggle-button {
+        display: flex; /* Show toggle button on small screens */
+    }
+
+    .workspace-selector {
+        display: 50%;
+    }
+
+    .workspace-selector-sidebar {
+        display: none;
+    }
+}
+
+/* Media query for responsive behavior */
+@media (max-width: 700px) {
+    .navbar-links {
+        display: none; /* Hide navbar links on small screens */
+    }
+
+    .toggle-button {
+        display: flex; /* Show toggle button on small screens */
+    }
+
+    .workspace-selector {
+        display: none;
+    }
+
+    .workspace-selector-sidebar {
+        display: flex;
+    }
 }

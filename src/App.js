@@ -4,7 +4,7 @@ import CardGrid from './components/CardGrid';
 import Search from './components/Search';
 import Navbar from './components/Navbar';
 import './index.css';
-import { getWorkspace, syncWorkspace } from './realtimeDB';
+import { getWorkspace, syncWorkspace, getUserWorkspaces, createWorkspace } from './realtimeDB';
 import { storage } from './firebase';
 import { ref, uploadBytes, deleteObject } from 'firebase/storage';
 import { getPdfUrl } from './utils'; 
@@ -15,13 +15,27 @@ import { onAuthStateChanged } from 'firebase/auth';
 const App = () => {
     const [cards, setCards] = useState([]);
     const [user, setUser] = useState(null);
+    const [workspaces, setWorkspaces] = useState([]);
+    const [selectedWorkspace, setSelectedWorkspace] = useState('');
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUser(user);
+            if (user) {
+                loadUserWorkspaces(user.email);
+            } else {
+                setWorkspaces([]);
+                setSelectedWorkspace('');
+            }
         });
         return () => unsubscribe();
     }, []);
+
+    const loadUserWorkspaces = async (userEmail) => {
+        const workspaces = await getUserWorkspaces(userEmail);
+        setWorkspaces(workspaces);
+    };
+
 
     const handleLogin = async () => {
         try {
@@ -35,28 +49,26 @@ const App = () => {
     const handleLogout = async () => {
         try {
             await logOut();
+            setCards([])
             alert('You have been logged out.');
         } catch (error) {
             alert('Error logging out. Please try again.');
         }
     };
 
-    useEffect(() => {
-        const loadWorkspace = async () => {
-            const workspace = await getWorkspace('myworkspace');
-            if (workspace && workspace.files) {
-                const loadedCards = Object.entries(workspace.files).map(
-                    ([name, data]) => ({
-                        id: Date.now() + Math.random(),
-                        pdf: getPdfUrl(data.storageId),
-                        name: data.documentName,
-                    })
-                );
-                setCards(loadedCards);
-            }
-        };
-        loadWorkspace();
-    }, []);
+    const loadWorkspace = async (workspaceId) => {
+        setCards([]);
+        const workspace = await getWorkspace(workspaceId);
+        if (workspace && workspace.files) {
+            const loadedCards = Object.entries(workspace.files).map(([name, data]) => ({
+                id: Date.now() + Math.random(),
+                pdf: getPdfUrl(data.storageId),
+                name: data.documentName,
+            }));
+            setCards(loadedCards);
+            setSelectedWorkspace(workspaceId);
+        }
+    };
 
     const addCard = (pdf) => {
         const newId = Date.now()
@@ -98,9 +110,14 @@ const App = () => {
     };
 
     const handleSync = async () => {
+        if (selectedWorkspace === '') {
+            alert('Please select a workspace to sync.');
+            return;
+        }
+
         try {
             // Fetch the existing workspace data
-            const workspace = await getWorkspace('myworkspace');
+            const workspace = await getWorkspace(selectedWorkspace);
             const existingFiles = workspace && workspace.files ? workspace.files : {};
             const files = [];
             const removedFiles = [];
@@ -137,7 +154,7 @@ const App = () => {
             }
     
             // Sync the workspace with the updated files list
-            await syncWorkspace(files);
+            await syncWorkspace(selectedWorkspace, files, user.email, [user.email]);
     
             // Now, remove any files that are no longer present locally
             await Promise.all(removedFiles.map(async (fileName) => {
@@ -152,16 +169,28 @@ const App = () => {
         }
     };    
 
+    const createNewWorkspace = async (name) => {
+        const workspaceId = await createWorkspace(name, user.email);
+        await loadUserWorkspaces(user.email);
+        setSelectedWorkspace(workspaceId);
+        loadWorkspace(workspaceId);
+    };
+
     return (
         <Router>
             <div className="app">
-                <Navbar 
-                    cards={cards} 
+                <Navbar  
                     onSync={handleSync} 
                     user={user}
                     onLogin={handleLogin}
                     onLogout={handleLogout} 
                     addCard={addCard}
+                    workspaces={workspaces}
+                    onSelectWorkspace={(id) => {
+                        setSelectedWorkspace(id);
+                        loadWorkspace(id);
+                    }}
+                    createWorkspace={createNewWorkspace}
                 /> 
                 <main>
                     <Routes>

@@ -16,7 +16,8 @@ const Card = ({ id, pdf, name, removeCard, updateCard }) => {
 
     return (
         <div className="card">
-            <iframe src={pdf} title="Generated PDF" width="100%" height="400px"></iframe>
+            <iframe src={pdf} title="Generated PDF" width="100%" height="600px"></iframe>
+            <br></br>
             {isEditing ? (
                 <input
                     type="text"
@@ -28,7 +29,7 @@ const Card = ({ id, pdf, name, removeCard, updateCard }) => {
             ) : (
                 <h3 onClick={() => setIsEditing(true)}>{editableName || 'Unnamed PDF'}</h3>
             )}
-            <button onClick={() => removeCard(id)}>Remove</button>
+            <button className='removeButton' onClick={() => removeCard(id)}>Remove</button>
         </div>
     );
 };
